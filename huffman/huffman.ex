@@ -1,10 +1,6 @@
 defmodule Huffman do
     def sample do
-        'the quick brown fox jumps over tha lazy dog
-        this is a sample text that we will user when we build
-        up a table we will only handle lower case letters and
-        no punctuation symbols the frequency will of course not
-        represent english but it is probably not that far off'
+        'the quick brown fox jumps over the lazy dog this is a sample text that we will use when we build up a table we will only handle lower case letters and no punctuation symbols the frequency will of course not represent english but it is probably not that far off'
     end
 
     def text, do: 'this is something that we should encode'
@@ -42,9 +38,30 @@ defmodule Huffman do
 
     defp makenode({c1, f1}, {c2,f2}), do: {{c1,c2}, f1+f2}
 
-    def encode_table(tree) do
-        
+    # make a table for encoding the text
+    def encode_table([{tup, _}]), do: encode_table(%{}, tup, [])
+    # If the node is a tuple -> recursively encode its left and right children
+    def encode_table(map, {left, right}, code) do
+        encode_table(map, left, code++[0]) |> encode_table(right, code++[1])
     end
+    # Basecase: we have found a value -> return map with added char w/ its code
+    def encode_table(map, char, code) do
+        Map.put(map, char, code)
+    end
+    _ = """
+    def encode_table(map, {{_,_} = left, {_,_}= right}, code) do
+        encode_table(map, left, code++[0]) |> encode_table(right, code++[1])
+    end
+    def encode_table(map, {{_,_} = left, char}, code) do
+        encode_table(Map.put(map, char, code), left, code++[0])
+    end
+    def encode_table(map, {char, {_,_}=right}, code) do
+        encode_table(Map.put(map, char, code), right, code++[1])
+    end
+    def encode_table(map, {val1, val2}, code) do
+        Map.put(map, val1, code++[0]) |> Map.put(val2, code++[1])
+    end
+    """
 
     def decode_table(tree) do
         tree
