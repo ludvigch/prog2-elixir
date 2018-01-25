@@ -48,6 +48,7 @@ defmodule Huffman do
     def encode_table(map, char, code) do
         Map.put(map, char, code)
     end
+    # old pattern matching shit dont use this please remove asap REEEEE
     _ = """
     def encode_table(map, {{_,_} = left, {_,_}= right}, code) do
         encode_table(map, left, code++[0]) |> encode_table(right, code++[1])
