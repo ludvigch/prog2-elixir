@@ -75,7 +75,7 @@ defmodule Huffman do
     end
     def encode([], _, acc), do: acc
     def encode([first|rest], table, acc) do
-        encode(rest, table, Map.get(table, first) ++ acc)
+        encode(rest, table,  acc ++ Map.get(table, first))
     end
 
     # seq: list
@@ -94,6 +94,17 @@ defmodule Huffman do
         case Map.get(table, code) do
             nil  -> decode_char(seq, n+1, table)
             char -> {char, rest}
+        end
+    end
+
+    def read(file, n) do
+        {:ok, file} = File.open(file, [:read])
+        binary = IO.read(file, n)
+        File.close(file)
+
+        case :unicode.characters_to_list(binary, :utf8) do
+            {:incomplete, list, _} -> list;
+            list -> list
         end
     end
 
