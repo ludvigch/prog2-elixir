@@ -35,7 +35,7 @@ defmodule Huffman do
 
     # l: list
     # returns: list
-    defp buildtree([_ | []]=l), do: l
+    defp buildtree([root]), do: elem(root, 0)
     defp buildtree([s1|[s2|t]]) do
         buildtree(List.keysort([makenode(s1,s2)|t], 1))
     end
@@ -47,7 +47,7 @@ defmodule Huffman do
     # code: list
     # returns: Map
     # make a table for encoding the text aka map characters to bit-codes
-    def encode_table([{tup, _}]), do: encode_table(%{}, tup, [])
+    def encode_table(tree), do: encode_table(%{}, tree, [])
     # if the node is a tuple -> recursively encode its left and right children
     def encode_table(map, {left, right}, code) do
         encode_table(map, left, code++[0]) |> encode_table(right, code++[1])
@@ -58,9 +58,14 @@ defmodule Huffman do
     end
 
     # ?
-    # def decode_table(tree) do
-    #   tree
-    # end
+    def decode_table(tree), do: decode_table(%{}, tree, [])
+    def decode_table(map, {left, right}, code) do
+        decode_table(map, left, code++[0]) |> decode_table(right, code++[1])
+    end
+    def decode_table(map, char, code) do
+        Map.put(map, code, char)
+    end
+
 
     # text: string/"char list"
     # table: map
@@ -83,10 +88,13 @@ defmodule Huffman do
     end
 
     def decode_char(seq, n, table) do
+        #IO.inspect Enum.split(seq, n)
         {code, rest} = Enum.split(seq, n) # why this
-        case List.keyfind(table, code, 1) do
-            char -> {char, rest}
+        #IO.inspect n
+        case Map.get(table, code) do
             nil  -> decode_char(seq, n+1, table)
+            char -> {char, rest}
         end
     end
+
 end
