@@ -15,8 +15,9 @@ defmodule Huffman do
         decode(seq, decode)
     end
 
+    # sample: strin/"char list"
+    # map: map
     def freq(sample), do: freq(sample, %{})
-
     def freq([], map), do: Map.to_list(map)
     def freq([h|t], map) do
         import Elixir.Map
@@ -26,11 +27,14 @@ defmodule Huffman do
         end
     end
 
+    # sample: string/"char list"
     def tree(sample) do
         sorted = freq(sample) |> List.keysort(1)
         buildtree(sorted)
     end
 
+    # l: list
+    # returns: list
     defp buildtree([_ | []]=l), do: l
     defp buildtree([s1|[s2|t]]) do
         buildtree(List.keysort([makenode(s1,s2)|t], 1))
@@ -38,41 +42,51 @@ defmodule Huffman do
 
     defp makenode({c1, f1}, {c2,f2}), do: {{c1,c2}, f1+f2}
 
-    # make a table for encoding the text
+    # in: list
+    # map: Map
+    # code: list
+    # returns: Map
+    # make a table for encoding the text aka map characters to bit-codes
     def encode_table([{tup, _}]), do: encode_table(%{}, tup, [])
-    # If the node is a tuple -> recursively encode its left and right children
+    # if the node is a tuple -> recursively encode its left and right children
     def encode_table(map, {left, right}, code) do
         encode_table(map, left, code++[0]) |> encode_table(right, code++[1])
     end
-    # Basecase: we have found a value -> return map with added char w/ its code
+    # basecase: we have found a value -> return map with added char w/ its code
     def encode_table(map, char, code) do
         Map.put(map, char, code)
     end
-    # old pattern matching shit dont use this please remove asap REEEEE
-    _ = """
-    def encode_table(map, {{_,_} = left, {_,_}= right}, code) do
-        encode_table(map, left, code++[0]) |> encode_table(right, code++[1])
-    end
-    def encode_table(map, {{_,_} = left, char}, code) do
-        encode_table(Map.put(map, char, code), left, code++[0])
-    end
-    def encode_table(map, {char, {_,_}=right}, code) do
-        encode_table(Map.put(map, char, code), right, code++[1])
-    end
-    def encode_table(map, {val1, val2}, code) do
-        Map.put(map, val1, code++[0]) |> Map.put(val2, code++[1])
-    end
-    """
 
-    def decode_table(tree) do
-        tree
-    end
+    # ?
+    # def decode_table(tree) do
+    #   tree
+    # end
 
+    # text: string/"char list"
+    # table: map
+    # returns: list
     def encode(text, table) do
-        text
+        encode(text, table, [])
+    end
+    def encode([], _, acc), do: acc
+    def encode([first|rest], table, acc) do
+        encode(rest, table, Map.get(table, first) ++ acc)
     end
 
-    def decode(seq, tree) do
-        seq
+    # seq: list
+    # table: list
+    # returns: list
+    def decode([], _), do: []
+    def decode(seq, table) do
+        {char, rest} = decode_char(seq, 1, table)
+        [char|decode(rest, table)]
+    end
+
+    def decode_char(seq, n, table) do
+        {code, rest} = Enum.split(seq, n) # why this
+        case List.keyfind(table, code, 1) do
+            char -> {char, rest}
+            nil  -> decode_char(seq, n+1, table)
+        end
     end
 end
