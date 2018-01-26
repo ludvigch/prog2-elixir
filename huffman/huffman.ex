@@ -1,18 +1,29 @@
 defmodule Huffman do
     def sample do
-        'the quick brown fox jumps over the lazy dog this is a sample text that we will use when we build up a table we will only handle lower case letters and no punctuation symbols the frequency will of course not represent english but it is probably not that far off'
+        'the quick brown fox jumps over the lazy dog this is a
+        sample text that we will use when we build up a table we
+        will only handle lower case letters and no punctuation symbols
+        the frequency will of course not represent english but it is probably
+        not that far off'
     end
 
     def text, do: 'this is something that we should encode'
 
+    def book, do: read("wow.txt", :all)
     def test do
-        sample = sample()
+        sample = book()
         tree = tree(sample)
+        IO.puts "built tree\nencoding tablestarted"
         encode = encode_table(tree)
+        IO.puts "encoding table done\ndecoding table started"
         decode = decode_table(tree)
-        text = text()
+        IO.puts "decoding table done\nstarted reading text"
+        text = sample()
+        IO.puts "text read\nencoding the text"
         seq = encode(text, encode)
-        decode(seq, decode)
+        IO.puts "text encoded\ndecoding started"
+        decode_help(seq, decode)
+        #IO.puts "decoding done"
     end
 
     # sample: strin/"char list"
@@ -75,12 +86,15 @@ defmodule Huffman do
     end
     def encode([], _, acc), do: acc
     def encode([first|rest], table, acc) do
-        encode(rest, table,  acc ++ Map.get(table, first))
+        encode(rest, table, Map.get(table, first)++acc )
     end
 
     # seq: list
     # table: list
     # returns: list
+    def decode_help(seq, table) do
+        Enum.reverse(decode(seq, table))
+    end
     def decode([], _), do: []
     def decode(seq, table) do
         {char, rest} = decode_char(seq, 1, table)
@@ -88,9 +102,7 @@ defmodule Huffman do
     end
 
     def decode_char(seq, n, table) do
-        #IO.inspect Enum.split(seq, n)
         {code, rest} = Enum.split(seq, n) # why this
-        #IO.inspect n
         case Map.get(table, code) do
             nil  -> decode_char(seq, n+1, table)
             char -> {char, rest}
