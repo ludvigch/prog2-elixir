@@ -18,7 +18,7 @@ defmodule Sort do
     def merge([], y), do: y
     def merge(x, []), do: x
     def merge([xh|xt]=x, [yh|yt]=y) when xh > yh, do: [yh | merge(x,yt)]
-    def merge([xh|xt]=x, [yh|yt]=y), do: [xh | merge(xt, y)]
+    def merge([xh|xt]=x, y), do: [xh | merge(xt, y)]
 
     def msort([]), do: []
     def msort([x]), do: [x]

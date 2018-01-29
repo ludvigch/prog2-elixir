@@ -1,24 +1,20 @@
 defmodule Huffman do
     def sample do
-        'the quick brown fox jumps over the lazy dog this is a
-        sample text that we will use when we build up a table we
-        will only handle lower case letters and no punctuation symbols
-        the frequency will of course not represent english but it is probably
-        not that far off'
+        'the quick brown fox jumps over the lazy dog this is a sample text that we will use when we build up a table we will only handle lower case letters and no punctuation symbols the frequency will of course not represent english but it is probably not that far off'
     end
 
     def text, do: 'this is something that we should encode'
 
-    def book, do: read("wow.txt", :all)
     def test do
-        sample = book()
+        sample = read("kallocain.txt", :all)
         tree = tree(sample)
         IO.puts "built tree\nencoding tablestarted"
         encode = encode_table(tree)
         IO.puts "encoding table done\ndecoding table started"
         decode = decode_table(tree)
         IO.puts "decoding table done\nstarted reading text"
-        text = sample()
+        text = read("kallocain.txt", :all)
+        #text = sample()
         IO.puts "text read\nencoding the text"
         seq = encode(text, encode)
         IO.puts "text encoded\ndecoding started"
@@ -86,7 +82,7 @@ defmodule Huffman do
     end
     def encode([], _, acc), do: acc
     def encode([first|rest], table, acc) do
-        encode(rest, table, Map.get(table, first)++acc )
+        encode(rest, table, Map.get(table, first)++acc)
     end
 
     # seq: list
@@ -102,7 +98,7 @@ defmodule Huffman do
     end
 
     def decode_char(seq, n, table) do
-        {code, rest} = Enum.split(seq, n) # why this
+        {code, rest} = Enum.split(seq, n)
         case Map.get(table, code) do
             nil  -> decode_char(seq, n+1, table)
             char -> {char, rest}
