@@ -1,10 +1,13 @@
 defmodule Blockcipher do
     # Dependency: init by compiling caesar.ex
     def test() do
-        text = 'abca'
-        key = 'abc'
+        text = 'strikeatdawn'
+        key = 'caesar'
+        IO.puts("encrypting '#{text}' with key '#{key}'")
         cipher = encrypt(text, key)
-        decrypt(cipher, key)
+        IO.puts("ciphertext generated: #{cipher}")
+        clear = decrypt(cipher, key)
+        IO.puts("decrypted ciphertext: #{clear}")
     end
 
     def encrypt(text, key) do
@@ -13,7 +16,6 @@ defmodule Blockcipher do
     def encrypt([], _, _, _), do: []
     def encrypt([char|rest], key, i, keylen) do
         keyindex = rem(i, keylen)
-        #IO.inspect keyindex
         [Caesar.encryptchar(char, elem(Enum.fetch(key, keyindex), 1)-97)
         | encrypt(rest, key, i+1, keylen)]
     end
