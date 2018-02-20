@@ -1,0 +1,15 @@
+Metainterpreter - description of the language
+
+<sequence>  ::= <expression>
+            |   <match> ';' <sequence>
+
+<match>     ::= <pattern> '=' <expression>
+
+<expression>::= <atom>
+            |   <variable>
+            |   '{' <expression> ',' <expression> '}'
+
+<pattern>   ::= <atom>
+            |   <variable>
+            |   '_' <- "don't care"
+            |   '{' <pattern> ',' <pattern> '}'
