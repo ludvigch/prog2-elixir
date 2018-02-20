@@ -1,2 +1,4 @@
 # stuff to ignore
 seminar/mandelbrot/pics
+*.png
+*.ppm
